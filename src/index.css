@@ -597,16 +597,6 @@ button, .kpi-card-new, .chart-card, .chip-filter, .segmented-option { transition
   height: 20rem;
 }
 
-/* Color específico para gráficos horizontales (Top DJs) */
-.chart-card:has(.chart-title:contains("Top 10")) .recharts-bar path {
-  fill: #f43f5e !important; /* rosa */
-}
-
-/* Gradiente alternativo para barras verticales */
-.chart-card:has(.chart-title:contains("Estado")) .recharts-bar path {
-  fill: #a78bfa !important; /* violeta claro */
-}
-
 .recharts-surface {
   overflow: visible;
 }
