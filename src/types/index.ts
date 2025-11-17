@@ -73,7 +73,7 @@ export interface KPIData {
   precioPromedioEvento: number;
 }
 
-export interface ChartData {
+export interface ChartData extends Record<string, unknown> {
   fecha: string;
   valor: number;
   categoria?: string;

@@ -32,7 +32,7 @@ export const ChartsGrid = ({ ingresosPorMes, eventosPorTipo, tendenciaEventos, e
               type="button"
               onClick={() => exportToCSV('ingresos_mensuales.csv', ingresosPorMes, [
                 { key: 'fecha', header: 'Mes' },
-                { key: 'valor', header: 'Ingresos', format: (v) => v }
+                { key: 'valor', header: 'Ingresos', format: (v) => Number(v) }
               ])}
             ><Download size={12} />&nbsp;CSV</button>
           </div>

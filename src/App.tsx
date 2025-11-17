@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { RefreshCw, Activity, FileSpreadsheet } from 'lucide-react';
+import { RefreshCw, Activity } from 'lucide-react';
 import { BarChart, LineChart } from '@tremor/react';
 import { NewKPICard } from './components/NewKPICard';
 import { ChartsGrid } from './components/ChartsGrid';
