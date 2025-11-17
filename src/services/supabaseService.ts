@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import type { KPIData, Filtros, ChartData } from '../types';
+import type { KPIData, Filtros, ChartData, Evento } from '../types';
 
 export const supabaseService = {
   // Obtener KPIs principales
@@ -64,15 +64,15 @@ export const supabaseService = {
       const totalEventos = eventos?.length || 0;
 
       const ingresosTotales = eventos
-        ?.filter(e => e.estado === 'completado' && e.precio_final)
-        .reduce((sum, e) => sum + (Number(e.precio_final) || 0), 0) || 0;
+        ?.filter((e: Evento) => e.estado === 'completado' && e.precio_final)
+        .reduce((sum: number, e: Evento) => sum + (Number(e.precio_final) || 0), 0) || 0;
 
       const comisionesTotales = proposals
-        ?.filter(p => p.estado === 'aceptado' && p.precio_propuesto)
-        .reduce((sum, p) => sum + ((Number(p.precio_propuesto) || 0) * 0.1), 0) || 0;
+        ?.filter((p: { estado: string; precio_propuesto?: number }) => p.estado === 'aceptado' && p.precio_propuesto)
+        .reduce((sum: number, p: { precio_propuesto?: number }) => sum + ((Number(p.precio_propuesto) || 0) * 0.1), 0) || 0;
 
       const ratingPromedioDJs = djs && djs.length > 0
-        ? djs.reduce((sum, dj) => sum + (Number(dj.rating) || 0), 0) / djs.length
+        ? djs.reduce((sum: number, dj: { rating: number }) => sum + (Number(dj.rating) || 0), 0) / djs.length
         : 0;
 
       const tasaConversion = totalEventos > 0 
@@ -87,13 +87,13 @@ export const supabaseService = {
         ? ingresosTotales / eventosCompletados
         : 0;
 
-      const kpiData = {
+      const kpiData: KPIData = {
         totalEventos,
         eventosCompletados,
         eventosRechazados,
         eventosPendientes,
-        djsActivos: djs?.filter(dj => dj.activo).length || 0,
-        clientesActivos: clientes?.filter(c => c.activo).length || 0,
+        djsActivos: djs?.filter((dj: { activo: boolean }) => dj.activo).length || 0,
+        clientesActivos: clientes?.filter((c: { activo: boolean }) => c.activo).length || 0,
         ingresosTotales,
         comisionesTotales,
         ratingPromedioDJs,
@@ -127,7 +127,7 @@ export const supabaseService = {
 
       const ingresosPorMes = new Array(12).fill(0);
       
-      eventos?.forEach(evento => {
+      eventos?.forEach((evento: Evento) => {
         if (evento.precio_final) {
           const mes = new Date(evento.fecha_evento).getMonth();
           ingresosPorMes[mes] += Number(evento.precio_final);
@@ -157,7 +157,7 @@ export const supabaseService = {
         .lte('fecha_evento', `${year}-12-31`);
 
       const countPorMes = new Array(12).fill(0);
-      eventos?.forEach(e => {
+      eventos?.forEach((e: { fecha_evento: string }) => {
         const mes = new Date(e.fecha_evento).getMonth();
         countPorMes[mes] += 1;
       });
@@ -178,7 +178,7 @@ export const supabaseService = {
       }
       const { data: eventos } = await query;
       const estados: Record<string, number> = {};
-      eventos?.forEach(e => { estados[e.estado] = (estados[e.estado] || 0) + 1; });
+      eventos?.forEach((e: { estado: string }) => { estados[e.estado] = (estados[e.estado] || 0) + 1; });
       return Object.entries(estados).map(([estado, cantidad]) => ({ fecha: estado.charAt(0).toUpperCase()+estado.slice(1), valor: cantidad }));
     } catch (error) {
       console.error('Error obteniendo eventos por estado:', error);
@@ -202,7 +202,7 @@ export const supabaseService = {
 
       const eventosPorTipo: Record<string, number> = {};
       
-      eventos?.forEach(evento => {
+      eventos?.forEach((evento: { tipo_evento: string }) => {
         eventosPorTipo[evento.tipo_evento] = (eventosPorTipo[evento.tipo_evento] || 0) + 1;
       });
 
@@ -285,21 +285,21 @@ export const supabaseService = {
       }
 
       const { data: eventos } = await query;
-      const variaciones = eventos?.map(e => ({
+      const variaciones = eventos?.map((e: { precio_ofrecido: number; precio_final: number; fecha_evento: string }) => ({
         fecha: new Date(e.fecha_evento).toLocaleDateString('es-CL', { month: 'short', year: 'numeric' }),
         valor: Number(e.precio_final) - Number(e.precio_ofrecido)
       })) || [];
 
       // Agrupar por mes
       const grouped: Record<string, number[]> = {};
-      variaciones.forEach(v => {
+      variaciones.forEach((v: { fecha: string; valor: number }) => {
         if (!grouped[v.fecha]) grouped[v.fecha] = [];
         grouped[v.fecha].push(v.valor);
       });
 
-      return Object.entries(grouped).map(([mes, valores]) => ({
+      return Object.entries(grouped).map(([mes, valores]: [string, number[]]) => ({
         fecha: mes,
-        valor: valores.reduce((a, b) => a + b, 0) / valores.length
+        valor: valores.reduce((a: number, b: number) => a + b, 0) / valores.length
       }));
     } catch (error) {
       console.error('Error obteniendo variación de precio:', error);
@@ -322,12 +322,12 @@ export const supabaseService = {
       const { data: eventos } = await query;
       const clientesCount: Record<string, number> = {};
       
-      eventos?.forEach(e => {
+      eventos?.forEach((e: { cliente_id: string }) => {
         clientesCount[e.cliente_id] = (clientesCount[e.cliente_id] || 0) + 1;
       });
 
       const total = Object.keys(clientesCount).length;
-      const nuevos = Object.values(clientesCount).filter(c => c === 1).length;
+      const nuevos = Object.values(clientesCount).filter((c: number) => c === 1).length;
       const recurrentes = total - nuevos;
 
       return { total, nuevos, recurrentes };
@@ -370,7 +370,7 @@ export const supabaseService = {
         .in('id', djIds);
 
       // Combinar conteos con nombres
-      const resultado = djs?.map(dj => ({
+      const resultado = djs?.map((dj: { id: string; nombre: string }) => ({
         fecha: dj.nombre,
         valor: conteos[dj.id]
       })) || [];
@@ -403,7 +403,7 @@ export const supabaseService = {
         datosMes[i] = { total: 0, aceptados: 0 };
       }
 
-      eventos?.forEach(e => {
+      eventos?.forEach((e: { fecha_evento: string; estado: string }) => {
         const mes = new Date(e.fecha_evento).getMonth();
         datosMes[mes].total++;
         if (e.estado === 'aceptado' || e.estado === 'completado') {

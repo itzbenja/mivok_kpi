@@ -24,6 +24,9 @@ function App() {
     return stored === 'dark' ? 'dark' : 'light';
   });
 
+  // Check if Supabase environment variables are configured
+  const supabaseConfigured = !!(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY);
+
   const loadData = async (newFiltros?: Filtros) => {
     try {
       setLoading(true);
@@ -143,16 +146,42 @@ function App() {
         </div>
       </header>
       <main className="main-container">
-        <FilterPanel onFilterChange={handleFilterChange} />
-        {loading && !kpiData ? (
-          <div style={{ textAlign: 'center', padding: '4rem 0' }}>
-            <div style={{ width: '72px', height: '72px', borderRadius: '50%', margin: '0 auto 1.75rem', background: 'linear-gradient(135deg,var(--gradient-brand))', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-lg)', animation: 'floatY 4.8s ease-in-out infinite' }}>
-              <RefreshCw size={34} color='#fff' className='spin-slow' />
+        {!supabaseConfigured ? (
+          <div style={{ textAlign: 'center', padding: '4rem 2rem', maxWidth: '600px', margin: '0 auto' }}>
+            <div style={{ width: '80px', height: '80px', borderRadius: '50%', margin: '0 auto 1.5rem', background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-lg)' }}>
+              <span style={{ fontSize: '2.5rem' }}>⚠️</span>
             </div>
-            <h2 style={{ fontSize: '1.1rem', fontWeight: 600, margin: 0 }}>Cargando Analítica Consolidada...</h2>
-            <p style={{ fontSize: '0.8rem', marginTop: '0.85rem', color: 'var(--color-text-muted)' }}>Esto puede tardar unos segundos.</p>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 700, margin: '0 0 1rem', color: 'var(--color-text-primary)' }}>
+              Configuración Requerida
+            </h2>
+            <p style={{ fontSize: '1rem', marginBottom: '1.5rem', color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
+              Faltan las variables de entorno de Supabase. Por favor configura:
+            </p>
+            <div style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-lg)', padding: '1.5rem', textAlign: 'left', fontFamily: 'monospace', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
+              <div style={{ marginBottom: '0.5rem', color: 'var(--color-text-primary)' }}>
+                <strong>VITE_SUPABASE_URL</strong>
+              </div>
+              <div style={{ color: 'var(--color-text-primary)' }}>
+                <strong>VITE_SUPABASE_ANON_KEY</strong>
+              </div>
+            </div>
+            <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
+              En Netlify: <strong>Site settings → Environment variables</strong><br/>
+              Luego redeploy: <strong>Deploys → Trigger deploy → Clear cache and deploy site</strong>
+            </p>
           </div>
         ) : (
+          <>
+            <FilterPanel onFilterChange={handleFilterChange} />
+            {loading && !kpiData ? (
+              <div style={{ textAlign: 'center', padding: '4rem 0' }}>
+                <div style={{ width: '72px', height: '72px', borderRadius: '50%', margin: '0 auto 1.75rem', background: 'linear-gradient(135deg,var(--gradient-brand))', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-lg)', animation: 'floatY 4.8s ease-in-out infinite' }}>
+                  <RefreshCw size={34} color='#fff' className='spin-slow' />
+                </div>
+                <h2 style={{ fontSize: '1.1rem', fontWeight: 600, margin: 0 }}>Cargando Analítica Consolidada...</h2>
+                <p style={{ fontSize: '0.8rem', marginTop: '0.85rem', color: 'var(--color-text-muted)' }}>Esto puede tardar unos segundos.</p>
+              </div>
+            ) : (
           <>
             <div className="kpi-board">
               {kpis.map(k => (
@@ -274,6 +303,8 @@ function App() {
                 ))}
               </div>
             </section>
+          </>
+            )}
           </>
         )}
       </main>
