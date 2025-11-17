@@ -1,0 +1,118 @@
+mutation SeedData @transaction @auth(level: NO_ACCESS) {
+  user_insertMany(
+    data: [
+      {
+        id: "673291fd-9d69-47aa-a9d3-7a99e6a3f38c"
+        bio: "A passionate data enthusiast."
+        createdAt: "2024-04-27T12:00:00Z"
+        displayName: "DataLover"
+        email: "datalover@example.com"
+        photoUrl: "https://example.com/datalover.jpg"
+      }
+      {
+        id: "9c3a0e3a-dd44-4091-a149-4f264f055129"
+        bio: "Loves creating beautiful visualizations."
+        createdAt: "2024-04-26T10:00:00Z"
+        displayName: "ChartChampion"
+        email: "chartchampion@example.com"
+        photoUrl: "https://example.com/chartchampion.jpg"
+      }
+    ]
+  )
+  dataset_insertMany(
+    data: [
+      {
+        id: "8b5d62f0-a7a5-477a-9a28-8b1e7e138a99"
+        userId: "673291fd-9d69-47aa-a9d3-7a99e6a3f38c"
+        columnNames: ["Date", "Value"]
+        columnTypes: ["Date", "Number"]
+        description: "Sample time series data"
+        fileType: "CSV"
+        name: "SampleData"
+        previewData: "Date,Value\n2024-01-01,10\n2024-01-02,12"
+        rowCount: 2
+        uploadDate: "2024-04-27T14:00:00Z"
+      }
+      {
+        id: "e5b8d9a0-5a6a-4e4a-9b7a-1d8b3a0f7c0c"
+        userId: "9c3a0e3a-dd44-4091-a149-4f264f055129"
+        columnNames: ["Category", "Sales"]
+        columnTypes: ["String", "Number"]
+        description: "Sales data by category"
+        fileType: "CSV"
+        name: "CategorySales"
+        previewData: "Category,Sales\nA,100\nB,150"
+        rowCount: 2
+        uploadDate: "2024-04-26T11:00:00Z"
+      }
+    ]
+  )
+  dashboard_insertMany(
+    data: [
+      {
+        id: "3c9e8b7a-4e9a-4a9a-9a4a-8e7a6e5e3a3a"
+        userId: "673291fd-9d69-47aa-a9d3-7a99e6a3f38c"
+        createdAt: "2024-04-27T15:00:00Z"
+        description: "A dashboard showing time series data"
+        isPublic: true
+        layoutConfig: "{}"
+        name: "TimeSeriesDashboard"
+      }
+      {
+        id: "7a9d4c3a-3a4a-4e4a-8a4a-3a9e7a9a8c4a"
+        userId: "9c3a0e3a-dd44-4091-a149-4f264f055129"
+        createdAt: "2024-04-26T12:00:00Z"
+        description: "A dashboard showing sales by category"
+        isPublic: false
+        layoutConfig: "{}"
+        name: "CategorySalesDashboard"
+      }
+    ]
+  )
+  visualization_insertMany(
+    data: [
+      {
+        id: "5e3f7a2b-6c1b-4a5b-9d2a-2b1b5a7c3f7a"
+        datasetId: "8b5d62f0-a7a5-477a-9a28-8b1e7e138a99"
+        userId: "673291fd-9d69-47aa-a9d3-7a99e6a3f38c"
+        chartConfig: "{}"
+        createdAt: "2024-04-27T16:00:00Z"
+        description: "A line chart of the sample data"
+        isPublic: true
+        name: "SampleLineChart"
+        visualizationType: "line"
+      }
+      {
+        id: "2b5c8d4a-8e4a-4c4a-9a8a-4a8d5c2b8d4a"
+        datasetId: "e5b8d9a0-5a6a-4e4a-9b7a-1d8b3a0f7c0c"
+        userId: "9c3a0e3a-dd44-4091-a149-4f264f055129"
+        chartConfig: "{}"
+        createdAt: "2024-04-26T13:00:00Z"
+        description: "A bar chart of sales by category"
+        isPublic: false
+        name: "CategoryBarChart"
+        visualizationType: "bar"
+      }
+    ]
+  )
+  comment_insertMany(
+    data: [
+      {
+        id: "5758f411-7a51-4b70-a41a-c6d2062f958c"
+        dashboardId: "3c9e8b7a-4e9a-4a9a-9a4a-8e7a6e5e3a3a"
+        userId: "673291fd-9d69-47aa-a9d3-7a99e6a3f38c"
+        visualizationId: "5e3f7a2b-6c1b-4a5b-9d2a-2b1b5a7c3f7a"
+        content: "Great chart!"
+        createdAt: "2024-04-27T17:00:00Z"
+      }
+      {
+        id: "867a4e15-d5a3-4b7d-b129-9e554f2557aa"
+        dashboardId: "7a9d4c3a-3a4a-4e4a-8a4a-3a9e7a9a8c4a"
+        userId: "9c3a0e3a-dd44-4091-a149-4f264f055129"
+        visualizationId: "2b5c8d4a-8e4a-4c4a-9a8a-4a8d5c2b8d4a"
+        content: "This is insightful!"
+        createdAt: "2024-04-26T14:00:00Z"
+      }
+    ]
+  )
+}

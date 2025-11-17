@@ -1,0 +1,47 @@
+type User @table {
+  displayName: String!
+  email: String
+  photoUrl: String
+  bio: String
+  createdAt: Timestamp!
+}
+
+type Dataset @table {
+  user: User
+  name: String!
+  description: String
+  uploadDate: Timestamp!
+  fileType: String!
+  columnNames: [String!]!
+  columnTypes: [String!]!
+  rowCount: Int
+  previewData: String
+}
+
+type Visualization @table {
+  user: User
+  dataset: Dataset
+  name: String!
+  description: String
+  visualizationType: String!
+  createdAt: Timestamp!
+  chartConfig: String!
+  isPublic: Boolean
+}
+
+type Dashboard @table {
+  user: User
+  name: String!
+  description: String
+  createdAt: Timestamp!
+  layoutConfig: String!
+  isPublic: Boolean
+}
+
+type Comment @table {
+  user: User
+  content: String!
+  createdAt: Timestamp!
+  visualization: Visualization
+  dashboard: Dashboard
+}

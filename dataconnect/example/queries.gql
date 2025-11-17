@@ -1,0 +1,32 @@
+mutation CreateUser @auth(level: USER, insecureReason: "This operation is safe to expose to all logged in users.") {
+  user_insert(data: {
+    id_expr: "uuidV4()",
+    displayName: "New User",
+    createdAt_expr: "request.time"
+  })
+}
+
+query ListPublicDashboards @auth(level: PUBLIC, insecureReason: "This operation is safe to expose to the public") {
+  dashboards(where: {isPublic: {eq: true}}) {
+    id
+    name
+    description
+  }
+}
+
+mutation AddCommentToDashboard($dashboardId: UUID!, $content: String!) @auth(level: USER) {
+  comment_insert(data: {
+    dashboardId: $dashboardId,
+    userId_expr: "auth.uid",
+    content: $content,
+    createdAt_expr: "request.time"
+  })
+}
+
+query GetMyDatasets @auth(level: USER) {
+  datasets(where: {userId: {eq_expr: "auth.uid"}}) {
+    id
+    name
+    description
+  }
+}
